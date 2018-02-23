@@ -2,29 +2,39 @@ package com.fhsa.auction.domain;
 
 import java.math.BigDecimal;
 
+import com.fhsa.auction.exception.bid.BidIllegalArgumentException;
+import com.fhsa.auction.exception.util.ExceptionMessages;
+
 public class Bid {
 	private BigDecimal value;
 	private User user;
 	
 	public Bid(BigDecimal value, User user) {
+		validBidsParameters(value, user);
 		this.value = value;
 		this.user = user;
 	}
 
+	private void validBidsParameters(BigDecimal value, User user) {
+		if(user == null) {
+			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_WITHOUT_USER);
+		} else if (value == null) {
+			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_WITHOUT_VALUE);
+		} else if (value.compareTo(BigDecimal.ZERO)==-1) {
+			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_NEGATIVE_VALUE);
+		} else if (value.compareTo(BigDecimal.ZERO)==0) {
+			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_ZERO_VALUE);
+		} else {
+			return;
+		}
+	}
+	
 	public BigDecimal getValue() {
 		return value;
 	}
 
-	public void setValue(BigDecimal value) {
-		this.value = value;
-	}
-
 	public User getUser() {
 		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	@Override

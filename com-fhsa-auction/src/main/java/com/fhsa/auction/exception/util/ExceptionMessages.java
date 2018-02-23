@@ -1,7 +1,8 @@
 package com.fhsa.auction.exception.util;
 
 public class ExceptionMessages {
-	public static String BID_EXCEPTION_WITHOUT_USER = "Can't create a new bid without a user bound to it.";
+	public static String BID_EXCEPTION_WITHOUT_USER = "Can't create a new bid without an user bound to it.";
+	public static String BID_EXCEPTION_WITHOUT_VALUE = "Can't create a new bid without a value bound to it.";
 	public static String BID_EXCEPTION_NEGATIVE_VALUE = "Can't create a new bid with bid's value negative.";
 	public static String BID_EXCEPTION_ZERO_VALUE = "Can't create a new bid with bid's value equal to zero.";
 	
