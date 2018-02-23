@@ -20,7 +20,7 @@ public class Bid {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_WITHOUT_USER);
 		} else if (value == null) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_WITHOUT_VALUE);
-		} else if (value.compareTo(BigDecimal.ZERO)==-1) {
+		} else if (value.compareTo(BigDecimal.ZERO)<0) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_NEGATIVE_VALUE);
 		} else if (value.compareTo(BigDecimal.ZERO)==0) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_ZERO_VALUE);
