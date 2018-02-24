@@ -8,7 +8,7 @@ import com.fhsa.auction.exception.util.ExceptionMessages;
 public class Bid {
 	private BigDecimal value;
 	private User user;
-	
+
 	public Bid(BigDecimal value, User user) {
 		validBidsParameters(value, user);
 		this.value = value;
@@ -16,19 +16,19 @@ public class Bid {
 	}
 
 	private void validBidsParameters(BigDecimal value, User user) {
-		if(user == null) {
+		if (user == null) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_WITHOUT_USER);
 		} else if (value == null) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_WITHOUT_VALUE);
-		} else if (value.compareTo(BigDecimal.ZERO)<0) {
+		} else if (value.compareTo(BigDecimal.ZERO) < 0) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_NEGATIVE_VALUE);
-		} else if (value.compareTo(BigDecimal.ZERO)==0) {
+		} else if (value.compareTo(BigDecimal.ZERO) == 0) {
 			throw new BidIllegalArgumentException(ExceptionMessages.BID_EXCEPTION_ZERO_VALUE);
 		} else {
 			return;
 		}
 	}
-	
+
 	public BigDecimal getValue() {
 		return value;
 	}
@@ -66,5 +66,10 @@ public class Bid {
 		} else if (!value.equals(other.value))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Bid [value=" + value + ", user=" + user + "]";
 	}
 }

@@ -37,7 +37,9 @@ public class AuctioneerTest {
 	 * [1] Isn't possible to get the three highest bids from a auction before evaluate
 	 * [2] It's possible to get the highest bids from each user after evaluate
 	 * [1] Isn's possible to get the highest bids from each user before evaluate
+	 * [1] Isn't possible to get the highest bid of an user without proposed bids
 	 * [1] Isn't possible to evaluate an nonexistent auction
+	 * [1] Isn't possible to evaluate an empty auction
 	 * [3] It's possible to evaluate auction (get lowest bid and highest bid)
 	 */
 	@Test
@@ -66,7 +68,7 @@ public class AuctioneerTest {
 
 		auctioneer.evaluateAuction(auction);
 
-		assertThat(auctioneer.getHighestsBidsFromAuction(), hasItems(
+		assertThat(auctioneer.getThreeHighestsBidList(), hasItems(
 				new Bid(BigDecimal.valueOf(50.00), fabio)
 				));
 	}
@@ -83,10 +85,10 @@ public class AuctioneerTest {
 
 		auctioneer.evaluateAuction(auction);
 
-		assertThat(auctioneer.getHighestsBidsFromAuction(), hasItems(
-				new Bid(BigDecimal.valueOf(59.00), catherine),
+		assertThat(auctioneer.getThreeHighestsBidList(), hasItems(
+				new Bid(BigDecimal.valueOf(61.00), fabio),
 				new Bid(BigDecimal.valueOf(60.00), lucas),
-				new Bid(BigDecimal.valueOf(61.00), fabio)
+				new Bid(BigDecimal.valueOf(59.00), catherine)
 				));		
 	}
 
@@ -102,7 +104,7 @@ public class AuctioneerTest {
 
 		auctioneer.evaluateAuction(auction);
 
-		assertThat(auctioneer.getHighestsBidsFromAuction(), hasItems(
+		assertThat(auctioneer.getThreeHighestsBidList(), hasItems(
 				new Bid(BigDecimal.valueOf(59.00), catherine),
 				new Bid(BigDecimal.valueOf(60.00), lucas),
 				new Bid(BigDecimal.valueOf(61.00), fabio)
@@ -111,20 +113,20 @@ public class AuctioneerTest {
 
 	@Test(expected=AuctioneerRuntimeException.class)
 	public void notPossibleToGetHighestsBidsBeforeEvaluate() {
-		auctioneer.getHighestsBidsFromAuction();
+		auctioneer.getThreeHighestsBidList();
 	}
-	
+
 	@Test
 	public void isPossibleToGetHighestsBidByUserWithOneBid() {
 		Auction auction = new AuctionBuilder().createNewAuctionTo("Glasses")
 				.proposeBid(BigDecimal.valueOf(20.00), anna)
 				.build();
-		
+
 		auctioneer.evaluateAuction(auction);
-		
+
 		assertThat(auctioneer.getHighestsBidByUser(anna), is(equalTo(new Bid(BigDecimal.valueOf(20.00), anna))));
 	}
-	
+
 	@Test
 	public void isPossibleToGetHighestsBidByUserWithManyBids() {
 		Auction auction = new AuctionBuilder().createNewAuctionTo("Glasses")
@@ -132,9 +134,9 @@ public class AuctioneerTest {
 				.proposeBid(BigDecimal.valueOf(55.00), anna)
 				.proposeBid(BigDecimal.valueOf(90.00), catherine)
 				.build();
-		
+
 		auctioneer.evaluateAuction(auction);
-		
+
 		assertThat(auctioneer.getHighestsBidByUser(anna), is(equalTo(new Bid(BigDecimal.valueOf(55.00), anna))));
 	}
 
@@ -142,7 +144,28 @@ public class AuctioneerTest {
 	public void notPossibleToGetHighestsBidByUserBeforeEvaluate() {
 		auctioneer.getHighestsBidByUser(fabio);
 	}
-	
+
+	@Test(expected=AuctioneerRuntimeException.class)
+	public void notPossibleToGetHighestBidOfUserWithoutBids() {
+		Auction auction = new AuctionBuilder().createNewAuctionTo("Ball")
+				.proposeBid(BigDecimal.valueOf(200.00), fabio)
+				.build();
+
+		auctioneer.evaluateAuction(auction);
+
+		auctioneer.getHighestsBidByUser(lucas);
+	}
+
+	@Test(expected=AuctioneerRuntimeException.class)
+	public void notPossibleToEvaluateNonexistentAuction() {
+		auctioneer.evaluateAuction(null);
+	}
+
+	@Test(expected=AuctioneerRuntimeException.class)
+	public void notPossibleToEvaluateEmptyAuction() {
+		auctioneer.evaluateAuction(new Auction("TV"));
+	}
+
 	@Test
 	public void isPossibleToEvaluateAuctionWithBidsInAscendingOrder() {
 		Auction auction = new AuctionBuilder().createNewAuctionTo("Mirror")
@@ -151,13 +174,13 @@ public class AuctioneerTest {
 				.proposeBid(BigDecimal.valueOf(50.00), catherine)
 				.proposeBid(BigDecimal.valueOf(60.00), lucas)
 				.build();
-		
+
 		auctioneer.evaluateAuction(auction);
 
 		assertThat(auctioneer.getLowestBid(), is(equalTo(new Bid(BigDecimal.valueOf(30.00), fabio))));
-		assertThat(auctioneer.getHighestBid(), is(equalTo(new Bid(BigDecimal.valueOf(60.00), fabio))));
+		assertThat(auctioneer.getHighestBid(), is(equalTo(new Bid(BigDecimal.valueOf(60.00), lucas))));
 	}
-	
+
 	@Test
 	public void isPossibleToEvaluateAuctionWithBidsInDescendingOrder() {
 		Auction auction = new AuctionBuilder().createNewAuctionTo("Mirror")
@@ -166,14 +189,14 @@ public class AuctioneerTest {
 				.proposeBid(BigDecimal.valueOf(40.00), anna)
 				.proposeBid(BigDecimal.valueOf(30.00), fabio)
 				.build();
-		
+
 		auctioneer.evaluateAuction(auction);
 
 		assertThat(auctioneer.getLowestBid(), is(equalTo(new Bid(BigDecimal.valueOf(30.00), fabio))));
-		assertThat(auctioneer.getHighestBid(), is(equalTo(new Bid(BigDecimal.valueOf(60.00), fabio))));
-		
+		assertThat(auctioneer.getHighestBid(), is(equalTo(new Bid(BigDecimal.valueOf(60.00), lucas))));
+
 	}
-	
+
 	@Test
 	public void isPossibleToEvaluateAuctionWithBidsInRandomOrder() {
 		Auction auction = new AuctionBuilder().createNewAuctionTo("Mirror")
@@ -182,11 +205,11 @@ public class AuctioneerTest {
 				.proposeBid(BigDecimal.valueOf(30.00), fabio)
 				.proposeBid(BigDecimal.valueOf(50.00), catherine)
 				.build();
-		
+
 		auctioneer.evaluateAuction(auction);
 
 		assertThat(auctioneer.getLowestBid(), is(equalTo(new Bid(BigDecimal.valueOf(30.00), fabio))));
-		assertThat(auctioneer.getHighestBid(), is(equalTo(new Bid(BigDecimal.valueOf(60.00), fabio))));
-		
+		assertThat(auctioneer.getHighestBid(), is(equalTo(new Bid(BigDecimal.valueOf(60.00), lucas))));
+
 	}
 }
